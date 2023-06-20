@@ -24,8 +24,11 @@ import React from 'react';
 import './app.css';
 import { TabSelector } from './components';
 import { TABS } from './components/tabs';
+import useSyncLocalStore from './hooks/useSyncLocalStore';
 
 const App: React.FC = () => {
+  useSyncLocalStore();
+
   return (
     <div className="w-full h-screen">
       <TabSelector tabs={TABS} />
