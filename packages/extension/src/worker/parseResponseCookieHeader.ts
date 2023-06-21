@@ -43,7 +43,12 @@ const parseResponseCookieHeader = (
   const parsedCookie: ParsedCookie = cookie.parse(header.value);
   const toplevel = top ? new URL(top).origin : '';
 
-  return { parsedCookie, url, toplevel, headerType: 'response' };
+  return {
+    parsedCookie: parsedCookie,
+    url,
+    toplevel,
+    headerType: 'response',
+  };
 };
 
 export default parseResponseCookieHeader;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 export const getTab = async (
-  tabId: string | number
+  tabId: number | string
 ): Promise<chrome.tabs.Tab | null> => {
   let tab: chrome.tabs.Tab | null = null;
 

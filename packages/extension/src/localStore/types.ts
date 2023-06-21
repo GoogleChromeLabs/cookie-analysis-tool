@@ -22,7 +22,7 @@ export type CookieData = {
   parsedCookie: ParsedCookie;
   url: string;
   toplevel: string;
-  headerType: string; // @todo Use 'response' | 'request'.
+  headerType: 'response' | 'request';
 };
 
 export type TabData = {
