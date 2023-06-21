@@ -30,6 +30,7 @@ export const CookieTab = () => {
   return (
     <div className="w-full h-full flex flex-col ">
       <div className="flex-1 overflow-y-scroll ">
+        <p>Cookies Count: {Object.entries(cookies).length}</p>
         <CookieList cookies={cookies} />
       </div>
     </div>

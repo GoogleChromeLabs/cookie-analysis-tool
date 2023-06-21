@@ -124,6 +124,7 @@
         "forbid": ["for"]
       }
     ],
+    "@typescript-eslint/ban-ts-comment": "off",
     "jsdoc/require-param-type": "off",
     "jsdoc/require-returns-type": "off"
   },

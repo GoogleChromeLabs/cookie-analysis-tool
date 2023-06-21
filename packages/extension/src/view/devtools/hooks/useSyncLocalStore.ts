@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// @ts-nocheck - @todo Fix ts issues.
 /**
  * External dependencies.
  */
@@ -23,8 +24,7 @@ import { useEffect } from 'react';
  */
 import { type CookieData } from '../../../localStore';
 import CookieStore from '../../../localStore/cookieStore';
-import { getTab } from '../../../utils/getTab';
-import { getCurrentTabId } from '../../../utils/getCurrentTabId';
+import { getCurrentTab, getCurrentTabId } from '../../../utils/getCurrentTabId';
 
 type Cookie = {
   name: string;
@@ -47,60 +47,79 @@ type Entry = {
   };
 };
 
-const getCookies = (
-  entries: Entry[],
+const getCookies = (entry, headerType, tabUrl) => {
+  const url = entry?.request.url;
+
+  return entry[headerType].cookies.map((cookie: Cookie) => {
+    const updatedCookie: { [key: string]: unknown } = {};
+
+    Object.entries(cookie).forEach(([key, value]) => {
+      const lowerKey = key.toLowerCase();
+      updatedCookie[lowerKey] = value;
+    });
+
+    return {
+      parsedCookie: updatedCookie,
+      headerType,
+      url,
+      toplevel: tabUrl,
+    };
+  });
+};
+
+const getHARCookie = (
+  entries: Entry[] = [],
   headerType: 'response' | 'request',
   tabUrl: string | unknown
 ): CookieData[] => {
-  // @todo Fix ts error
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  return entries.reduce((cookies, entry: Entry) => {
-    const url = entry.request.url;
-    const _cookies = entry[headerType].cookies.map((cookie) => {
-      const updatedCookie: { [key: string]: unknown } = {};
-
-      Object.entries(cookie).forEach(([key, value]) => {
-        const lowerKey = key.toLowerCase();
-        updatedCookie[lowerKey] = value;
-      });
-
-      return {
-        parsedCookie: updatedCookie,
-        headerType,
-        url,
-        toplevel: tabUrl,
-      };
-    });
-
+  return entries.reduce((cookies, entry) => {
+    const _cookies = getCookies(entry, headerType, tabUrl);
     return [...cookies, ..._cookies];
   }, []);
 };
 
+const updateCookies = async (entries, callback) => {
+  const currentTab = await getCurrentTab();
+
+  if (!currentTab) {
+    return;
+  }
+
+  const currentTabId = await getCurrentTabId(currentTab);
+
+  const requestCookies = callback(entries, 'request', currentTab.url);
+  const responseCookies = callback(entries, 'response', currentTab.url);
+
+  const cookies = [...requestCookies, ...responseCookies];
+
+  if (!cookies.length) {
+    return;
+  }
+
+  await CookieStore.update(currentTabId, cookies);
+};
+
+const updateCookieOnRequestFinished = async (request) => {
+  await updateCookies(request, getCookies);
+};
+
+const updateInitialCookies = async (harLog: chrome.devtools.network.HARLog) => {
+  await updateCookies(harLog.entries, getHARCookie);
+};
+
 const useSyncLocalStore = () => {
   useEffect(() => {
-    chrome.devtools.network.getHAR(
-      async (harLog: chrome.devtools.network.HARLog) => {
-        const tabId = await getCurrentTabId();
+    chrome.devtools.network.getHAR(updateInitialCookies);
 
-        if (!tabId) {
-          return;
-        }
-
-        const tab = await getTab(tabId);
-
-        if (!tab) {
-          return;
-        }
-
-        const requestCookies = getCookies(harLog.entries, 'request', tab.url);
-        const responseCookies = getCookies(harLog.entries, 'response', tab.url);
-
-        const cookies = [...requestCookies, ...responseCookies];
-
-        await CookieStore.update(tabId, cookies);
-      }
+    chrome.devtools.network.onRequestFinished.addListener(
+      updateCookieOnRequestFinished
     );
+
+    return () => {
+      chrome.devtools.network.onRequestFinished.removeListener(
+        updateCookieOnRequestFinished
+      );
+    };
   }, []);
 };
 
