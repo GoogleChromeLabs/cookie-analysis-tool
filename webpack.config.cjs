@@ -86,6 +86,7 @@ const root = {
       patterns: [
         { from: './packages/extension/src/manifest.json', to: '' },
         { from: './packages/extension/icons', to: 'icons' },
+        { from: './third_party', to: 'third_party' },
       ],
     }),
     new WebpackBar({
@@ -120,7 +121,7 @@ const devTools = {
       title: 'CAT',
       template: './packages/extension/src/view/devtools/devtools.html',
       filename: 'devtools.html',
-      inject: false,
+      inject: true,
     }),
   ],
   ...commonConfig,

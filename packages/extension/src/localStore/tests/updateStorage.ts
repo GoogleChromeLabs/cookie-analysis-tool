@@ -20,25 +20,25 @@
 import updateStorage from '../updateStorage';
 import { type Storage } from '../types';
 
-describe.only('local store: updateSorage', () => {
+describe('local store: updateStorage', () => {
   let storage: Storage = {};
+
   beforeAll(() => {
     globalThis.chrome = {
       storage: {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore local does not implementains of other properties
+        //@ts-ignore local does not implementations of other properties
         local: {
           set: (data) =>
-            new Promise((resolve) => {
+            new Promise<void>((resolve) => {
               storage = data;
               resolve();
             }),
           get: () =>
-            new Promise((resolve) => {
+            new Promise<{ [key: string]: any }>((resolve) => {
               resolve(storage);
             }),
           getBytesInUse: () =>
-            new Promise((resolve) => {
+            new Promise<number>((resolve) => {
               resolve(new TextEncoder().encode(JSON.stringify(storage)).length);
             }),
           QUOTA_BYTES: 10485760,
@@ -131,7 +131,7 @@ describe.only('local store: updateSorage', () => {
     expect(storage).toStrictEqual({ '123': newData, '234': tab2 });
   });
 
-  it.only('makes space for new updates by deleating tab data by LRU', async () => {
+  it('makes space for new updates by deleting tab data by LRU', async () => {
     const tab1 = {
       cookies: {},
       url: '123',
@@ -145,6 +145,8 @@ describe.only('local store: updateSorage', () => {
     expect(storage).toStrictEqual({
       '123': tab1,
     });
+
+    await new Promise((r) => setTimeout(r, 100));
 
     const tab2 = {
       cookies: {},
@@ -160,6 +162,8 @@ describe.only('local store: updateSorage', () => {
     chrome.storage.local.QUOTA_BYTES = new TextEncoder().encode(
       JSON.stringify({ '123': tab1, '234': tab2 })
     ).length;
+
+    await new Promise((r) => setTimeout(r, 100));
 
     const tab3 = {
       cookies: {},
