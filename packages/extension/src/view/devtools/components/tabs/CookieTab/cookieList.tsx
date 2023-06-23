@@ -33,6 +33,7 @@ interface ICoookieList {
 
 const CookieList = ({ cookies, tabURL }: ICoookieList) => (
   <ul className="w-full h-full">
+    <p>Cookies Count: {Object.entries(cookies).length}</p>
     {cookies &&
       tabURL &&
       Object.entries(cookies).map(([key, value]) => (

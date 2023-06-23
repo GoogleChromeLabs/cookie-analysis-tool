@@ -21,14 +21,11 @@ import React from 'react';
 /**
  * Internal dependencies.
  */
-import { useCookieStore } from '../../../../stateProviders/syncCookieStore';
+import useHarCookies from '../../../hooks/useHarCookies';
 import CookieList from './cookieList';
 
 export const CookieTab = () => {
-  const { cookies, tabURL } = useCookieStore(({ state }) => ({
-    cookies: state?.cookies,
-    tabURL: state?.url,
-  }));
+  const { cookies, tabURL } = useHarCookies();
 
   return (
     <div className="w-full h-full flex flex-col ">

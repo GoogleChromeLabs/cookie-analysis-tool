@@ -35,6 +35,8 @@ chrome.webRequest.onResponseStarted.addListener(
   async (details: chrome.webRequest.WebResponseCacheDetails) => {
     const { tabId, url, responseHeaders } = details;
 
+    return;
+
     const tab = await getTab(tabId);
 
     if (!tab || !responseHeaders) {
@@ -78,6 +80,8 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
       if (!requestHeaders) {
         return;
       }
+
+      return;
 
       if (!cookieDB) {
         cookieDB = await fetchDictionary();

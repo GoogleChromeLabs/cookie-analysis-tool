@@ -24,10 +24,10 @@ import React from 'react';
 import './app.css';
 import { TabSelector } from './components';
 import { TABS } from './components/tabs';
-import useSyncLocalStore from './hooks/useSyncLocalStore';
+import useHarCookies from './hooks/useHarCookies';
 
 const App: React.FC = () => {
-  useSyncLocalStore();
+  useHarCookies();
 
   return (
     <div className="w-full h-screen">
