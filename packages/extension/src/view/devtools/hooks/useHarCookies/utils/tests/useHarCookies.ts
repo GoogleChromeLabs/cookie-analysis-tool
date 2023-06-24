@@ -16,7 +16,7 @@
 /**
  * Internal dependencies.
  */
-import { getCookies, getHARCookie } from '../useHarCookies';
+import { getCookies, getHARCookie } from '../getCookies';
 
 const ENTRY = {
   // Not full object.

@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 /**
- * External dependencies.
+ * Internal dependencies.
  */
-import React from 'react';
-import { TextDecoder, TextEncoder } from 'node:util';
-import { chrome } from 'jest-chrome';
+import type { Cookie, State } from './types';
 
-global.React = React;
-global.TextDecoder = TextDecoder;
-global.TextEncoder = TextEncoder;
-global.chrome = chrome;
+type Action = {
+  type: string;
+  payload: { [key: string]: Cookie } | string;
+};
+
+const reducer = (state: State, action: Action) => {
+  switch (action.type) {
+    case 'SET_COOKIES':
+      return {
+        ...state,
+        cookies: {
+          ...state.cookies,
+          ...action.payload,
+        },
+      };
+    case 'SET_TAB_URL':
+      return { ...state, tabURL: action.payload };
+    default:
+      return state;
+  }
+};
+
+export default reducer;

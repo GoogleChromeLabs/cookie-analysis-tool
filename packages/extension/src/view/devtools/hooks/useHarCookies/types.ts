@@ -13,14 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * External dependencies.
- */
-import React from 'react';
-import { TextDecoder, TextEncoder } from 'node:util';
-import { chrome } from 'jest-chrome';
+export type Cookie = {
+  name: string;
+  value: string;
+  expires?: string | number | Date;
+  path?: string;
+  domain?: string;
+  httpOnly?: boolean;
+  secure?: boolean;
+  sameSite?: string;
+};
 
-global.React = React;
-global.TextDecoder = TextDecoder;
-global.TextEncoder = TextEncoder;
-global.chrome = chrome;
+export type Entry = {
+  request: {
+    cookies: Cookie[];
+    url: string;
+  };
+  response: {
+    cookies: Cookie[];
+  };
+};
+
+export type State = {
+  cookies: Cookie[];
+  tabURL: string;
+};

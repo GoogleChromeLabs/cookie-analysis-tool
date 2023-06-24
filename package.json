@@ -60,6 +60,7 @@
 		"html-webpack-plugin": "^5.5.2",
 		"husky": "^8.0.3",
 		"jest": "^29.5.0",
+		"jest-chrome": "^0.8.0",
 		"jest-environment-jsdom": "^29.5.0",
 		"jest-extended": "^4.0.0",
 		"lint-staged": "^13.2.2",
@@ -90,5 +91,10 @@
 	"type": "module",
 	"workspaces": [
 		"packages/*"
-	]
+	],
+	"overrides": {
+		"jest-chrome": {
+			"jest": "$jest"
+		}
+	}
 }
