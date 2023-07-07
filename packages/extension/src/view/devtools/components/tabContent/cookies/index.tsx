@@ -22,19 +22,37 @@ import React, { useEffect, useState } from 'react';
  * Internal dependencies.
  */
 import { useCookieStore } from '../../../../stateProviders/syncCookieStore';
-import { CookieList, CookieDetails } from './components';
-import type { CookieData } from '../../../../../localStore';
+import { CookieList, CookieDetails, FiltersList } from './components';
+import type {
+  CookieData,
+  Cookies as CookiesType,
+} from '../../../../../localStore';
+import filterCookies from './components/cookieFilter/filterCookies';
+import type { SelectedFilters } from './components/cookieFilter/types';
+import CookiesProvider from './cookiesProvider';
+
+type UseCookieStoreReturnType = {
+  cookies: CookiesType;
+};
 
 const Cookies = () => {
-  const { cookies, tabUrl } = useCookieStore(({ state }) => ({
-    cookies: state?.cookies,
-    tabUrl: state?.url,
-  }));
+  const { cookies } = useCookieStore(
+    ({ state }) =>
+      ({
+        cookies: state?.cookies,
+      } as UseCookieStoreReturnType)
+  );
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [selectedCookie, setSelectedCookie] = useState<CookieData | null>(null);
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({});
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
+    if (!cookies) {
+      return;
+    }
+
     if (!selectedKey && Object.keys(cookies).length !== 0) {
       setSelectedKey(Object.keys(cookies)[0]);
       setSelectedCookie(cookies[Object.keys(cookies)[0]]);
@@ -47,30 +65,48 @@ const Cookies = () => {
     }
   }, [cookies, selectedKey]);
 
+  if (!cookies) {
+    return null;
+  }
+
+  const filteredCookies = filterCookies(cookies, selectedFilters, searchTerm);
+
   return (
-    <div
-      className="w-full h-full flex flex-col lg:flex-row"
-      data-testid="cookies-content"
-    >
-      <div className="basis-1/2 lg:basis-1/3 overflow-y-scroll border-r ">
-        <CookieList
-          cookies={cookies}
-          tabUrl={tabUrl}
-          selectedKey={selectedKey}
-          onClickItem={setSelectedKey}
-        />
-      </div>
-      <div className=" basis-1/2 lg:basis-2/3 overflow-y-scroll pb-28">
-        <div className="border-t-gray-300 border-t-2 lg:border-t-0 ">
-          {selectedCookie && (
-            <CookieDetails
-              data={selectedCookie.parsedCookie}
-              analytics={selectedCookie.analytics}
+    <CookiesProvider>
+      <div className="p-2 px-3 border-b">Header Bar</div>
+      <div
+        className="w-full h-full flex flex-col lg:flex-row"
+        data-testid="cookies-content"
+      >
+        <div className="h-1/2 lg:w-2/5 lg:h-auto flex">
+          <div className="w-1/3 border-r p-3 pt-1 overflow-y-scroll">
+            <FiltersList
+              cookies={cookies}
+              selectedFilters={selectedFilters}
+              setSelectedFilters={setSelectedFilters}
+              setSearchTerm={setSearchTerm}
             />
-          )}
+          </div>
+          <div className="w-2/3 overflow-y-scroll border-r ">
+            <CookieList
+              cookies={filteredCookies}
+              selectedKey={selectedKey}
+              onClickItem={setSelectedKey}
+            />
+          </div>
+        </div>
+        <div className="h-1/2 lg:w-3/5 lg:h-auto overflow-y-scroll pb-28">
+          <div className="border-t-gray-300 border-t-2 lg:border-t-0 ">
+            {selectedCookie && (
+              <CookieDetails
+                data={selectedCookie.parsedCookie}
+                analytics={selectedCookie.analytics}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </CookiesProvider>
   );
 };
 

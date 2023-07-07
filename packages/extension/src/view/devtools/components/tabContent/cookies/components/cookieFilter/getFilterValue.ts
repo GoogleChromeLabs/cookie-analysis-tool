@@ -13,7 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * Internal dependencies.
+ */
+import type { CookieData } from '../../../../../../../localStore';
 
-export { default as CookieDetails } from './cookieDetails';
-export { default as CookieList } from './cookieList';
-export { default as FiltersList } from './cookieFilter';
+const getFilterValue = (keys: string, cookieData: CookieData) => {
+  const _keys = keys.split('.');
+  const rootKey = _keys[0] as keyof CookieData;
+  const subKey = _keys[1] as keyof CookieData[keyof CookieData];
+  let value: any = ''; // eslint-disable-line @typescript-eslint/no-explicit-any -- Value can of any
+
+  if (cookieData && cookieData[rootKey]) {
+    value = subKey ? cookieData[rootKey]?.[subKey] : cookieData[rootKey];
+  }
+
+  return value;
+};
+
+export default getFilterValue;

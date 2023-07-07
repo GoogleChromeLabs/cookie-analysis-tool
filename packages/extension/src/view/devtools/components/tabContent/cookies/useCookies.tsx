@@ -13,7 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies.
+ */
+import { useContextSelector } from 'use-context-selector';
 
-export { default as CookieDetails } from './cookieDetails';
-export { default as CookieList } from './cookieList';
-export { default as FiltersList } from './cookieFilter';
+/**
+ * Internal dependencies.
+ */
+import CookiesContext from './context';
+import type { CookiesContextState } from './types';
+
+const useCookies = <T,>(
+  selector: (state: CookiesContextState) => T | CookiesContextState = (state) =>
+    state
+): CookiesContextState | T => {
+  return useContextSelector(CookiesContext, selector);
+};
+
+export default useCookies;

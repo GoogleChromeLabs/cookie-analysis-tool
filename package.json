@@ -4,6 +4,7 @@
 	"description": "Cookie Analysis Tool and CLI for analysis and understanding of cookie usage on web pages.",
 	"scripts": {
 		"test": "jest --config=tests/jest.config.js",
+		"test:watch": "jest --config=tests/jest.config.js --watch",
 		"dev": "webpack --config webpack.config.cjs --watch",
 		"build": "cross-env NODE_ENV=production webpack --config webpack.config.cjs",
 		"serve": "webpack serve",
@@ -12,6 +13,7 @@
 		"lint:types": "tsc --project ./packages/**/tsconfig.json",
 		"lint:js:fix": "eslint --fix .",
 		"prepare": "husky install",
+		"start": "npm i && npm run dev",
 		"cookie-db:update": "node scripts/update-cookie-db.cjs"
 	},
 	"repository": {

@@ -27,13 +27,16 @@ export type CookieData = {
   parsedCookie: ParsedCookie;
   analytics: CookieAnalytics | null;
   url: string;
+  thirdParty: boolean | null;
   headerType: 'response' | 'request';
 };
 
+export type Cookies = {
+  [cookieName: string]: CookieData;
+};
+
 export type TabData = {
-  cookies: {
-    [key: string]: CookieData;
-  };
+  cookies: Cookies;
   url: string | undefined;
   focusedAt: number | undefined;
 };

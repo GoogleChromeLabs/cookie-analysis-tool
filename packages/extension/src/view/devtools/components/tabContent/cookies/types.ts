@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { default as CookieDetails } from './cookieDetails';
-export { default as CookieList } from './cookieList';
-export { default as FiltersList } from './cookieFilter';
+export interface CookiesContextState {
+  state: {
+    [key: string]: string;
+  };
+  actions: {
+    [key: string]: string;
+  };
+}
